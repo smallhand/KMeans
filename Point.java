@@ -32,11 +32,36 @@ public class Point{
 	}
 //////////////////////////need revised////////////////
 	//min, max: coordinate bound; 
-	public static Point randomCentroid(double min, double max){
+/*	public static Point randomCentroid(double min, double max){
 		Random r = new Random();
 		double x = min + (max-min) * r.nextDouble();
 		double y = min + (max-min) * r.nextDouble();
 		return new Point(x,y);
+	}*/
+
+	public static List<Point> dataCentroids(String inputFile){
+		List<Point> centroids = new ArrayList();
+		double x,y;
+		try{
+			FileReader fr = new FileReader(inputFile);
+			BufferedReader br = new BufferedReader(fr);
+			while (br.ready()) {				
+				String s_tmp = br.readLine();
+				String[] tokens = s_tmp.split(" ");
+				x=Double.parseDouble(tokens[0]); 
+				y=Double.parseDouble(tokens[1]);
+				
+				Point p = new Point(x,y);
+				centroids.add(p);
+			}
+
+			fr.close();
+		}
+		catch(IOException e){
+			System.out.println("error to read file");
+		}
+		return centroids;
+
 	}
 
 	// read in input points
@@ -48,7 +73,7 @@ public class Point{
 			BufferedReader br = new BufferedReader(fr);
 			while (br.ready()) {				
 				String s_tmp = br.readLine();
-				String[] tokens = s_tmp.split(",");
+				String[] tokens = s_tmp.split(" ");
 				x=Double.parseDouble(tokens[0]); 
 				y=Double.parseDouble(tokens[1]);
 				

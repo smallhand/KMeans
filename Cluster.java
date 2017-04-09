@@ -47,32 +47,18 @@ public class Cluster{
 	public void outCluster(){
 		try{ // cluser
 		    FileWriter fw = new FileWriter("the-file-name.txt",true);
-		   //FileWriter fw2 = new FileWriter("plot.txt",true);
-		   
-		    //double[][] ps = new double [points.size()+1][2];
-			//System.out.println("ttt "+ points.size());
-			
-		    //JavaPlot graph = new JavaPlot();
-			//PointDataSet dataPoint = new PointDataSet(points);
-		    
+		   		    
 		    fw.write("cluser: " + id + "\n");
 		    fw.write("centroid: " + centroid +"\n");
 		    fw.write("points: \n");
-			int i=0;
+			
 		    for (Point p: points){
-		    	fw.write(p + "\n");
-				//ps[i][0]=p.getX();
-				//ps[i][1]=p.getY();
-				++i;
-		    	//fw2.write(p + "\n");
+		    	fw.write(p + "\n");			
 		    }
-			/*DataSetPlot dataPoint = new DataSetPlot(ps);
-			graph.addPlot(dataPoint);
-		    graph.plot();*/
+			
 		    fw.write("\n");
-		    //fw2.write("\n");
 		    fw.close();
-		    //fw2.close();
+		    
 		} 
 		catch (IOException e) {
 			System.out.println("error to write file");

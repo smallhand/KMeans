@@ -11,7 +11,7 @@ import com.panayotis.gnuplot.dataset.PointDataSet;
 
 
 public class KMeans{
-	private int NUM_CLUSTERS = 3; // temporary 3 clusters
+	private int NUM_CLUSTERS = 8; // temporary 3 clusters
 	private double MIN_COORDINATE = 0.0, MAX_COORDINATE = 1000.0;
 	private double THRESHOLD = 0.05; // the bound of centroids convergence
 	
@@ -25,22 +25,22 @@ public class KMeans{
 
 	public static void main(String[] args){
 		KMeans k = new KMeans();
-		k.init(args[0]); //input file
+		k.init(args[0], args[1]); //input file
 		k.mainControl();
 	}
 
-	public void init(String inputFile){	// 1. init
+	public void init(String inputFile, String inputCentroids){	// 1. init
 		// input data(points)
 		points = Point.dataPoints(inputFile);
 
 		//open the new file to write
 		openNewFile();
 
+		List<Point> centroids = Point.dataCentroids(inputCentroids);
 		// create and initialize each cluster: id, centroid
 		for (int i=0; i<NUM_CLUSTERS; i++){
 			Cluster cluster = new Cluster(i);
-			Point centroid = Point.randomCentroid(MIN_COORDINATE, MAX_COORDINATE);
-			cluster.setCentroid(centroid);
+			cluster.setCentroid(centroids.get(i));
 			clusters.add(cluster);
 		}
 
@@ -84,6 +84,12 @@ public class KMeans{
 	public void plotCluster(){
 		double[][] p_plot, c_plot; //point & centroid
 		JavaPlot graph = new JavaPlot();
+
+		graph.set("xlabel","'x'");
+		graph.set("ylabel","'y'");
+		graph.set("key", "at -30, 1000");
+		graph.set("title","'KMeans'");
+
 		DataSetPlot dataPoints, dataCentroids;
 
 		for (Cluster c: clusters){
@@ -100,7 +106,9 @@ public class KMeans{
 			c_plot[0][1] = c.getCentroid().getY();
 
 			dataPoints = new DataSetPlot(p_plot);
+			dataPoints.setTitle("cluster   "+c.getId());
 			dataCentroids = new DataSetPlot(c_plot);
+			dataCentroids.setTitle("centroid "+c.getId());
 
 			graph.addPlot(dataPoints);
 			graph.addPlot(dataCentroids);
@@ -186,9 +194,6 @@ public class KMeans{
 	public void openNewFile(){
 		try{
 			FileWriter fw = new FileWriter("the-file-name.txt");
-			FileWriter fw2 = new FileWriter("plot.txt");
-			fw2.write("# X Y");
-			fw2.close();
 			fw.close();
 		}
 		catch (IOException e) {
