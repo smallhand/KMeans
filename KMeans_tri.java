@@ -156,7 +156,7 @@ public class KMeans_tri{
 				for (int j=0; j<NUM_CLUSTERS; j++){
 					if (i==j)
 						continue;
-					else if(2*dis < dis_centroids[i][j])
+					else if(2*dis <= dis_centroids[i][j])
 						needCompare[j]=0;
 				}							
 				if(dis<min_dis){
