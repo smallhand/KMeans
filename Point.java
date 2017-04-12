@@ -26,9 +26,11 @@ public class Point{
 	}
 
 	//calculate the distance between a point and a centroid
-	public static double distance(Point p, Point centroid){
+	public static double distance(Point p, Point centroid, int cluster_num){ //cluster_num: control sse
 		double dis_square = Math.pow(p.getX()-centroid.getX(),2) + Math.pow(p.getY()-centroid.getY(),2);
-		return Math.sqrt(dis_square);
+		if(cluster_num==-1)
+			return Math.sqrt(dis_square);
+		return (dis_square/cluster_num);
 	}
 //////////////////////////need revised////////////////
 	//min, max: coordinate bound; 

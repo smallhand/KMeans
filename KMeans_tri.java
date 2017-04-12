@@ -68,9 +68,10 @@ public class KMeans_tri{
 
 			double dis=0.0;
 			for (int i=0; i<NUM_CLUSTERS; i++){
-				dis += Point.distance(preCentroids.get(i), currentCentroids.get(i));
+				dis += Point.distance(preCentroids.get(i), currentCentroids.get(i),-1);
 			}
-			System.out.println(dis+"\n");
+			//System.out.println(dis+"\n");
+			sse();
 			outInfo(itr,dis);
 			plotCluster();
 			for (int i=0; i<NUM_CLUSTERS; i++){
@@ -126,7 +127,7 @@ public class KMeans_tri{
 			Cluster ci = clusters.get(i);
 			for (int j=0; j<NUM_CLUSTERS; j++){
 				Cluster cj = clusters.get(j);
-				dis_centroids[i][j] = Point.distance(ci.getCentroid(),cj.getCentroid());
+				dis_centroids[i][j] = Point.distance(ci.getCentroid(),cj.getCentroid(),-1);
 			}
 		}
 	}
@@ -152,7 +153,7 @@ public class KMeans_tri{
 				if(needCompare[i]==0)  //1: need compared, keep going ; 0: skip
 					continue;
 
-				dis = Point.distance(p, c.getCentroid());
+				dis = Point.distance(p, c.getCentroid(),-1);
 				for (int j=0; j<NUM_CLUSTERS; j++){
 					if (i==j)
 						continue;
@@ -167,6 +168,19 @@ public class KMeans_tri{
 			p.setClusterID(belong_cluster); // set the point belong to which cluster;
 			clusters.get(belong_cluster).addPoint(p); // add the point to its belong cluster
 		}
+	}
+
+	public void sse(){
+		double dis = 0.0;
+		System.out.println("sse:");	
+		for(Cluster c: clusters){
+			List<Point> ps = c.getPoints();
+			for(Point p : ps){
+				dis += Point.distance(p, c.getCentroid(),NUM_CLUSTERS);	
+			}
+			System.out.println("Cluster "+c.getId()+": "+dis);	
+		}
+		System.out.println();
 	}
 
 	public void update(){ // 3. update new centroids
@@ -201,7 +215,7 @@ public class KMeans_tri{
 			double dis=0.0;
 			if(ps.size()==0){
 				for (Point p : points){
-					dis = Point.distance(p,c.getCentroid());
+					dis = Point.distance(p,c.getCentroid(),-1);
 					if(dis<min_dis){
 						min_dis = dis;
 						min_p = p;
