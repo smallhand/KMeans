@@ -30,7 +30,7 @@ public class Point{
 		double dis_square = Math.pow(p.getX()-centroid.getX(),2) + Math.pow(p.getY()-centroid.getY(),2);
 		if(cluster_num==-1)
 			return Math.sqrt(dis_square);
-		return (dis_square/cluster_num);
+		return (dis_square);
 	}
 //////////////////////////need revised////////////////
 	//min, max: coordinate bound; 

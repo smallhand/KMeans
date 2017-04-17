@@ -5,14 +5,14 @@ import java.io.FileWriter;
 import java.io.BufferedReader;
 import java.io.IOException;
 
-import com.panayotis.gnuplot.JavaPlot;
-import com.panayotis.gnuplot.plot.DataSetPlot;
-import com.panayotis.gnuplot.dataset.PointDataSet;
+//import com.panayotis.gnuplot.JavaPlot;
+//import com.panayotis.gnuplot.plot.DataSetPlot;
+//import com.panayotis.gnuplot.dataset.PointDataSet;
 
 
 public class KMeans{
 	private int NUM_CLUSTERS = 8; // temporary 3 clusters
-	private double MIN_COORDINATE = 0.0, MAX_COORDINATE = 1000.0;
+	private double MIN_COORDINATE = 0.0, MAX_COORDINATE = 1000000.0;
 	private double THRESHOLD = 0.05; // the bound of centroids convergence
 	
 	private List<Point> points;
@@ -46,18 +46,22 @@ public class KMeans{
 
 		// print initial
 		for (int i=0; i<NUM_CLUSTERS; i++){
-			clusters.get(i).outCluster();
+			clusters.get(i).outCluster("file.txt");
 		}
 	}
 
 	public void mainControl(){ // 2. assign, 3. update
 		int itr = 0; // record iteration times		
 		boolean finish = false;
-
+		long timer1, timer2, timer3, timer4;
+		float time=0;
 		while (!finish){
 			++itr;			
 			List<Point> preCentroids = getCentroids(); // non-update Centroid
 			clearClusterPoint(); //clear the pre-step points
+
+			timer1 = System.currentTimeMillis();
+
 			assign(); 
 			update();
 			List<Point> currentCentroids = getCentroids();
@@ -66,24 +70,41 @@ public class KMeans{
 			for (int i=0; i<NUM_CLUSTERS; i++){
 				dis += Point.distance(preCentroids.get(i), currentCentroids.get(i),-1);
 			}
+			timer2 = System.currentTimeMillis();
+			
 			//System.out.println(dis+"\n");
 
 			sse();
 			outInfo(itr,dis);
-			plotCluster();
+			//plotCluster();
 			for (int i=0; i<NUM_CLUSTERS; i++){
 				Cluster c = clusters.get(i);
-				c.outCluster();
+				c.outCluster("file.txt");
 			}
+			timer3 = System.currentTimeMillis();
 
 			reassign(); // it will be effective if a cluster has no points
 
+			timer4 = System.currentTimeMillis();
+			
+			time = time + ((timer4-timer3)+(timer2-timer1));
+
+
 			if(dis<THRESHOLD){ // end iteration
+
+				try{ // cluser
+		    		FileWriter fw = new FileWriter("SSE.txt", true);
+		    		fw.write("Executing Time: "+time + "ms\n");
+		    		fw.close();
+				} 
+				catch (IOException e) {
+					System.out.println("error to write file");
+				}
 				finish = true;
 			}
 		}
 	}
-	public void plotCluster(){
+	/*public void plotCluster(){
 		double[][] p_plot, c_plot; //point & centroid
 		JavaPlot graph = new JavaPlot();
 
@@ -116,7 +137,7 @@ public class KMeans{
 			graph.addPlot(dataCentroids);
 		}
 		graph.plot();
-	}
+	}*/
 
 	public void assign(){
 		double dis = 0.0;  // the distance between a point and a centroid
@@ -139,14 +160,24 @@ public class KMeans{
 
 	public void sse(){
 		double dis = 0.0;
+		double sum = 0.0;
 		System.out.println("sse:");	
 		for(Cluster c: clusters){
 			List<Point> ps = c.getPoints();
 			for(Point p : ps){
 				dis += Point.distance(p, c.getCentroid(),NUM_CLUSTERS);	
 			}
-			System.out.println("Cluster "+c.getId()+": "+dis);	
+			sum = sum + dis/ps.size();
 		}
+		try{ // cluser
+		    FileWriter fw = new FileWriter("SSE.txt", true);
+		    fw.write("SSE_SUM"+" : "+sum+"\n");
+		    fw.close();
+		} 
+		catch (IOException e) {
+			System.out.println("error to write file");
+		}
+		System.out.println("SSE_SUM"+": "+sum);
 		System.out.println();
 	}
 
@@ -195,7 +226,7 @@ public class KMeans{
 
 	public void outInfo(int itr, double dis){
 		try{ // cluser
-		    FileWriter fw = new FileWriter("the-file-name.txt", true);
+		    FileWriter fw = new FileWriter("file.txt", true);
 		    fw.write("====================\n");
 		    fw.write("iteration: " + itr + "\n");
 		    fw.write("distance: " + dis + "\n\n");
@@ -208,7 +239,7 @@ public class KMeans{
 
 	public void openNewFile(){
 		try{
-			FileWriter fw = new FileWriter("the-file-name.txt");
+			FileWriter fw = new FileWriter("file.txt");
 			fw.close();
 		}
 		catch (IOException e) {

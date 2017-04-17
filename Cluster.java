@@ -1,8 +1,8 @@
 import java.util.ArrayList;
 import java.util.List;
-import com.panayotis.gnuplot.JavaPlot;
+/*import com.panayotis.gnuplot.JavaPlot;
 import com.panayotis.gnuplot.plot.DataSetPlot;
-import com.panayotis.gnuplot.dataset.PointDataSet;
+import com.panayotis.gnuplot.dataset.PointDataSet;*/
 
 
 //import java.io.File;
@@ -36,7 +36,7 @@ public class Cluster{
 		this.centroid = c;
 	}
 	public Point getCentroid(){
-		return centroid;
+		return centroid; 
 	}
 	public int getId(){
 		return id;
@@ -44,9 +44,9 @@ public class Cluster{
 	public void clearPoints(){ //used in the beginning of the next round
 		points.clear();
 	}
-	public void outCluster(){
+	public void outCluster(String file){
 		try{ // cluser
-		    FileWriter fw = new FileWriter("the-file-name.txt",true);
+		    FileWriter fw = new FileWriter(file,true);
 		   		    
 		    fw.write("cluser: " + id + "\n");
 		    fw.write("centroid: " + centroid +"\n");
