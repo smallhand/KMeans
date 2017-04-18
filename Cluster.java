@@ -1,8 +1,8 @@
 import java.util.ArrayList;
 import java.util.List;
-/*import com.panayotis.gnuplot.JavaPlot;
+import com.panayotis.gnuplot.JavaPlot;
 import com.panayotis.gnuplot.plot.DataSetPlot;
-import com.panayotis.gnuplot.dataset.PointDataSet;*/
+import com.panayotis.gnuplot.dataset.PointDataSet;
 
 
 //import java.io.File;
