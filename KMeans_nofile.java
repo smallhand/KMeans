@@ -11,30 +11,28 @@ import com.panayotis.gnuplot.dataset.PointDataSet;
 
 
 public class KMeans_nofile{
-	private int NUM_CLUSTERS = 8; // temporary 3 clusters
+	private int NUM_CLUSTERS; // the number of cluster
 	private double MIN_COORDINATE = 0.0, MAX_COORDINATE = 1000000.0;
 	private double THRESHOLD = 0.05; // the bound of centroids convergence
 	
 	private List<Point> points;
 	private List<Cluster> clusters;
 
-	public KMeans_nofile(){
+	public KMeans_nofile(String k){
+		this.NUM_CLUSTERS = Integer.valueOf(k);
 		this.points = new ArrayList();
 		this.clusters = new ArrayList();
 	}
 
 	public static void main(String[] args){
-		KMeans_nofile k = new KMeans_nofile();
+		KMeans_nofile k = new KMeans_nofile(args[2]);
 		k.init(args[0], args[1]); //input file
 		k.mainControl();
 	}
 
-	public void init(String inputFile, String inputCentroids){	// 1. init
+	public void init(String inputFile, String inputCentroids, String num_clusters){	// 1. init
 		// input data(points)
 		points = Point.dataPoints(inputFile);
-
-		//open the new file to write
-		//openNewFile();
 
 		List<Point> centroids = Point.dataCentroids(inputCentroids);
 		// create and initialize each cluster: id, centroid
@@ -44,10 +42,6 @@ public class KMeans_nofile{
 			clusters.add(cluster);
 		}
 
-		// print initial
-		//for (int i=0; i<NUM_CLUSTERS; i++){
-		//	clusters.get(i).outCluster("file.txt");
-		//}
 	}
 
 	public void mainControl(){ // 2. assign, 3. update

@@ -10,25 +10,25 @@ import com.panayotis.gnuplot.plot.DataSetPlot;
 import com.panayotis.gnuplot.dataset.PointDataSet;
 
 
-
 public class KMeans_tri_nofile{
-	private int NUM_CLUSTERS = 8; // temporary 3 clusters
+	private int NUM_CLUSTERS; // the number of cluster
 	private double MIN_COORDINATE = 0.0, MAX_COORDINATE = 1000000.0;
 	private double THRESHOLD = 0.05; // the bound of centroids convergence
 	
 	private List<Point> points;
 	private List<Cluster> clusters;
 
-	public double[][] dis_centroids;
+	public double[][] dis_centroids; //used for triangular inequivalent
 
-	public KMeans_tri_nofile(){
+	public KMeans_tri_nofile(String k){
+		this.NUM_CLUSTERS = Integer.valueOf(k);
 		this.points = new ArrayList();
 		this.clusters = new ArrayList();
 		this.dis_centroids = new double[NUM_CLUSTERS][NUM_CLUSTERS];
 	}
 
 	public static void main(String[] args){
-		KMeans_tri_nofile k = new KMeans_tri_nofile();
+		KMeans_tri_nofile k = new KMeans_tri_nofile(args[2]);
 		k.init(args[0],args[1]); //input file
 		k.mainControl();
 	}
@@ -37,9 +37,6 @@ public class KMeans_tri_nofile{
 		// input data(points)
 		points = Point.dataPoints(inputPoints);
 
-		//open the new file to write
-		//openNewFile();
-	
 		List<Point> centroids = Point.dataCentroids(inputCentroids);
 		// create and initialize each cluster: id, centroid
 		for (int i=0; i<NUM_CLUSTERS; i++){
@@ -47,14 +44,9 @@ public class KMeans_tri_nofile{
 			cluster.setCentroid(centroids.get(i));
 			clusters.add(cluster);
 		}
-
-		// print initial
-		/*for (int i=0; i<NUM_CLUSTERS; i++){
-			clusters.get(i).outCluster("file_tri.txt");
-		}*/
 	}
 
-	public void mainControl(){ // 2. assign, 3. update
+	public void mainControl(){ // include assign and update
 		int itr = 0; // record iteration times		
 		boolean finish = false;
 		long timer1, timer2, timer3, timer4;
@@ -66,8 +58,8 @@ public class KMeans_tri_nofile{
 			clearClusterPoint(); //clear the pre-step points
 			//timer1 = System.currentTimeMillis();
 
-			assign(); 
-			update();
+			assign(); // 2. assign
+			update(); // 3. update
 			List<Point> currentCentroids = getCentroids();
 
 			double dis=0.0;
@@ -76,14 +68,8 @@ public class KMeans_tri_nofile{
 			}
 			//timer2 = System.currentTimeMillis();
 
-			//System.out.println(dis+"\n");
 			//sse();
-			//outInfo(itr,dis);
 			plotCluster();
-			/*for (int i=0; i<NUM_CLUSTERS; i++){
-				Cluster c = clusters.get(i);
-				c.outCluster("file_tri.txt");
-			}*/
 
 			//timer3 = System.currentTimeMillis();
 
@@ -91,8 +77,6 @@ public class KMeans_tri_nofile{
 			//timer4 = System.currentTimeMillis();
 
 			//time = time + ((timer4-timer3)+(timer2-timer1));
-
-
 
 			if(dis<THRESHOLD){ // end iteration
 				/*try{ // cluser
@@ -111,12 +95,13 @@ public class KMeans_tri_nofile{
 		double[][] p_plot, c_plot; //point & centroid
 		JavaPlot graph = new JavaPlot();
 
+		// set the content of gragh
 		graph.set("xlabel","'x'");
 		graph.set("ylabel","'y'");
 		graph.set("key", "at -30, 1000");
 		graph.set("title","'KMeans'");
 		
-		//DataSetPlot dataPoints, dataCentroids;
+		DataSetPlot dataPoints, dataCentroids;
 
 		for (Cluster c: clusters){
 			List<Point> ps = c.getPoints();
@@ -139,7 +124,6 @@ public class KMeans_tri_nofile{
 			graph.addPlot(dataPoints);
 			graph.addPlot(dataCentroids);
 		}
-		
 		graph.plot();
 	}
 
@@ -154,7 +138,7 @@ public class KMeans_tri_nofile{
 	}
 
 
-///// add triangular inequivalent here ///////////
+// add triangular inequivalent here // 
 	public void assign(){
 		double dis = 0.0;  // the distance between a point and a centroid
 		double min_dis;
@@ -167,11 +151,11 @@ public class KMeans_tri_nofile{
 
 			int[] needCompare = new int[NUM_CLUSTERS]; // set the point whether need compared to other centroids (triangular)
 			for (int i=0; i<NUM_CLUSTERS; i++)
-				needCompare[i] = 1;			 
+				needCompare[i] = 1;	//1: need compared ; 0: not need compare
 
 			for(int i=0; i<NUM_CLUSTERS; i++){ //compare from cluster0				
 				Cluster c = clusters.get(i);
-				if(needCompare[i]==0)  //1: need compared, keep going ; 0: skip
+				if(needCompare[i]==0) // not need compared -> skip 
 					continue;
 
 				dis = Point.distance(p, c.getCentroid(),-1);
@@ -191,7 +175,7 @@ public class KMeans_tri_nofile{
 		}
 	}
 
-	/*public void sse(){
+	public void sse(){
 		double dis = 0.0;
 		double sum = 0.0;
 		System.out.println("sse:");	
@@ -212,7 +196,7 @@ public class KMeans_tri_nofile{
 		}
 		System.out.println("SSE_SUM"+": "+sum);
 		System.out.println();
-	}*/
+	}
 
 	public void update(){ // 3. update new centroids
 		for (Cluster c: clusters){
@@ -236,7 +220,6 @@ public class KMeans_tri_nofile{
 		}
 	}
 
-//////////////check/////////////
 	public void reassign(){ //if a cluster has no points, then we will assign a nearest point to it.
 		int id = -1;
 		for (Cluster c : clusters){
@@ -254,29 +237,6 @@ public class KMeans_tri_nofile{
 				}
 				c.setCentroid(min_p);				
 			}		
-		}
-	}
-
-	public void outInfo(int itr, double dis){
-		try{ // cluser
-		    FileWriter fw = new FileWriter("file_tri.txt", true);
-		    fw.write("====================\n");
-		    fw.write("iteration: " + itr + "\n");
-		    fw.write("distance: " + dis + "\n\n");
-		    fw.close();
-		} 
-		catch (IOException e) {
-			System.out.println("error to write file");
-		}
-	}
-
-	public void openNewFile(){
-		try{
-			FileWriter fw = new FileWriter("file_tri.txt");
-			fw.close();
-		}
-		catch (IOException e) {
-			System.out.println("error to write file");
 		}
 	}
 
