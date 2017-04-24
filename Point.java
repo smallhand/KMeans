@@ -32,14 +32,6 @@ public class Point{
 			return Math.sqrt(dis_square);
 		return (dis_square);
 	}
-//////////////////////////need revised////////////////
-	//min, max: coordinate bound; 
-/*	public static Point randomCentroid(double min, double max){
-		Random r = new Random();
-		double x = min + (max-min) * r.nextDouble();
-		double y = min + (max-min) * r.nextDouble();
-		return new Point(x,y);
-	}*/
 
 	public static List<Point> dataCentroids(String inputFile){
 		List<Point> centroids = new ArrayList();
