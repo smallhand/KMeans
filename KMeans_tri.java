@@ -5,14 +5,14 @@ import java.io.FileWriter;
 import java.io.BufferedReader;
 import java.io.IOException;
 
-//import com.panayotis.gnuplot.JavaPlot;
-//import com.panayotis.gnuplot.plot.DataSetPlot;
-//import com.panayotis.gnuplot.dataset.PointDataSet;
+import com.panayotis.gnuplot.JavaPlot;
+import com.panayotis.gnuplot.plot.DataSetPlot;
+import com.panayotis.gnuplot.dataset.PointDataSet;
 
 
 
 public class KMeans_tri{
-	private int NUM_CLUSTERS = 8; // temporary 3 clusters
+	private int NUM_CLUSTERS = 8; // temporary 8 clusters
 	private double MIN_COORDINATE = 0.0, MAX_COORDINATE = 1000000.0;
 	private double THRESHOLD = 0.05; // the bound of centroids convergence
 	
